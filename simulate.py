@@ -144,9 +144,13 @@ def budget_multiplier(cfg: dict, cal: pd.DataFrame, regime: dict, rng: np.random
     if regime["budget_follows_season"]:
         bs = cfg["media"]["budget_season"]
         F = fourier_terms(n, order=len(cfg["business"]["seasonality_log_coefs"]) // 2)
-        mult *= np.exp(bs["fourier_amplification"] * (F @ np.array(cfg["business"]["seasonality_log_coefs"])))
+        cycle = np.exp(bs["fourier_amplification"] * (F @ np.array(cfg["business"]["seasonality_log_coefs"])))
         for ev, m in bs["event_multipliers"].items():
-            mult *= np.where(cal[ev] == 1, m, 1.0)
+            cycle *= np.where(cal[ev] == 1, m, 1.0)
+        # budget_cycle_weight in [0, 1] blends a flat budget (0) with the full seasonal cycle (1);
+        # replicate.py sweeps it to move spend correlation continuously.
+        w_cycle = regime.get("budget_cycle_weight", 1.0)
+        mult *= cycle ** w_cycle
     if regime["common_shock_sd"] > 0:
         mult *= np.exp(rng.normal(0, regime["common_shock_sd"], n))
     return mult / mult.mean()
@@ -233,8 +237,10 @@ def calibrate_betas(cfg: dict, planned: pd.DataFrame, weights: dict, k_abs: dict
 
 # --------------------------------------------------------------------------- simulation loop
 
-def simulate_regime(cfg: dict, regime_key: str, seed: int, out_root: Path) -> dict:
-    regime = cfg["regimes"][regime_key]
+def simulate_regime(cfg: dict, regime_key: str, seed: int, out_root: Path, regime_override: dict | None = None,
+                    plot: bool = True) -> dict:
+    """Simulate one regime; regime_override replaces the config entry (used by replicate.py)."""
+    regime = regime_override if regime_override is not None else cfg["regimes"][regime_key]
     misspec = regime["misspecification"]
     rng = np.random.default_rng([seed, ord(regime_key)])
     start = date.fromisoformat(cfg["start_date"])
@@ -392,8 +398,9 @@ def simulate_regime(cfg: dict, regime_key: str, seed: int, out_root: Path) -> di
                 np.log(np.maximum(x, 1.0) / np.maximum(planned[c].to_numpy(), 1.0)), sentiment),
         }
     (out / "truth.json").write_text(json.dumps(summary, indent=2))
-    plot_decomposition(cal, baseline, contrib, revenue, observed_spend, channels, out / "decomposition.png",
-                       f"Regime {regime_key}: {regime['label']}")
+    if plot:
+        plot_decomposition(cal, baseline, contrib, revenue, observed_spend, channels, out / "decomposition.png",
+                           f"Regime {regime_key}: {regime['label']}")
     return summary
 
 
