@@ -318,9 +318,32 @@ def simulate_regime(cfg: dict, regime_key: str, seed: int, out_root: Path) -> di
         observed_spend *= np.exp(rng.normal(0, m["spend_measurement_error_sd"], spend.shape))
         observed_spend[:, channels.index("display")] *= (1 + m["display_fee_markup"])
 
+    # ---- a go-dark experiment on one channel: exact treatment effect, measured with noise.
+    # Counterfactual: spend on the test channel set to zero inside the window; carryover from
+    # earlier weeks still decays through the window, exactly as in a real geo holdout.
+    lt = cfg["lift_test"]
+    jl = channels.index(lt["channel"])
+    w0, w1 = lt["start_week"], lt["start_week"] + lt["n_weeks"]
+    cf_spend = spend[:, jl].copy()
+    cf_spend[w0:w1] = 0.0
+    cf_contrib = np.array([betas[lt["channel"]] * hill(adstock_at(cf_spend, t, weights[lt["channel"]]),
+                                                        k_abs[lt["channel"]], specs[lt["channel"]]["s"])
+                           for t in range(w0, w1)])
+    incremental_true = float(contrib[w0:w1, jl].sum() - cf_contrib.sum())
+    incremental_measured = incremental_true * float(np.exp(rng.normal(0, lt["measurement_noise_sd"])))
+    lift_test = {
+        "channel": lt["channel"], "start_week": w0, "end_week_exclusive": w1,
+        "weeks": [str(d.date()) if hasattr(d, "date") else str(d) for d in cal["week_start"].iloc[w0:w1]],
+        "spend_in_window": float(observed_spend[w0:w1, jl].sum()) if misspec else float(spend[w0:w1, jl].sum()),
+        "incremental_revenue_measured": incremental_measured,
+        "measurement_sd": abs(incremental_measured) * lt["measurement_noise_sd"],
+        "design": "go-dark holdout: channel switched off in the window, effect measured against control",
+    }
+
     # ---- outputs
     out = out_root / f"regime_{regime_key}"
     out.mkdir(parents=True, exist_ok=True)
+    (out / "lift_test.json").write_text(json.dumps(lift_test, indent=2))
 
     observed = cal[["week_start", "black_friday", "black_friday_next", "christmas", "post_christmas",
                     "soldes_early", "soldes_late", "rentree", "august"]].copy()
@@ -343,6 +366,7 @@ def simulate_regime(cfg: dict, regime_key: str, seed: int, out_root: Path) -> di
     total_contrib = contrib.sum()
     summary = {
         "regime": regime_key, "label": regime["label"], "seed": seed, "n_weeks": n,
+        "lift_test_incremental_true": incremental_true,
         "mean_weekly_revenue": float(revenue.mean()),
         "baseline_share": float(baseline.sum() / revenue.sum()),
         "noise_sd": float(noise_sd),

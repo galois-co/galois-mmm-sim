@@ -122,6 +122,13 @@
     "quarterly_feedback_clip": [0.85, 1.2]
   },
 
+  "lift_test": {
+    "channel": "social",
+    "start_week": 100,
+    "n_weeks": 8,
+    "measurement_noise_sd": 0.15
+  },
+
   "misspecification": {
     "video_delayed_weights": [0.10, 0.25, 0.30, 0.18, 0.10, 0.05, 0.02],
     "competitor_shock": {"episodes": 3, "length_weeks": 3, "log_effect": -0.10},
