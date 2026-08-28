@@ -178,15 +178,17 @@ def fit_bayes(regime_dir: Path, out_dir: Path, args) -> dict:
            "sampling_seconds": round(time.time() - t0, 1)}
 
     cmp = compare_to_truth(summary, regime_dir, channels)
-    cmp["roi_in_90pct_interval"] = {c: bool(summary[c]["roi_hdi5"] <= cmp["roi_true"][c] <= summary[c]["roi_hdi95"])
-                                    for c in channels}
-    cmp["coverage_90"] = float(np.mean(list(cmp["roi_in_90pct_interval"].values())))
+    if cmp is not None:
+        cmp["roi_in_90pct_interval"] = {c: bool(summary[c]["roi_hdi5"] <= cmp["roi_true"][c] <= summary[c]["roi_hdi95"])
+                                        for c in channels}
+        cmp["coverage_90"] = float(np.mean(list(cmp["roi_in_90pct_interval"].values())))
     print_comparison(f"{label}, regime {regime_dir.name[-1]}", summary, cmp, channels, fit)
     print("  90% intervals on ROI:")
     for c in channels:
-        flag = "in" if cmp["roi_in_90pct_interval"][c] else "OUT"
-        print(f"    {c:16s} [{summary[c]['roi_hdi5']:.2f}, {summary[c]['roi_hdi95']:.2f}]  truth {cmp['roi_true'][c]:.2f}  {flag}")
-    print(f"  coverage of the 90% intervals: {cmp['coverage_90']:.0%}")
+        tail = f"  truth {cmp['roi_true'][c]:.2f}  {'in' if cmp['roi_in_90pct_interval'][c] else 'OUT'}" if cmp else ""
+        print(f"    {c:16s} [{summary[c]['roi_hdi5']:.2f}, {summary[c]['roi_hdi95']:.2f}]{tail}")
+    if cmp is not None:
+        print(f"  coverage of the 90% intervals: {cmp['coverage_90']:.0%}")
 
     name = "bayes_calibrated" if args.calibrate else "bayes"
     if args.prior_scale != 1.0:

@@ -148,8 +148,11 @@ def decomp_rssd(summary: dict, spend: np.ndarray, channels: list[str]) -> float:
     return float(np.sqrt(np.sum((effect_share - spend_share) ** 2)))
 
 
-def compare_to_truth(summary: dict, regime_dir: Path, channels: list[str]) -> dict:
-    """Development-time comparison. Never call this on the sealed reference instance before reveal."""
+def compare_to_truth(summary: dict, regime_dir: Path, channels: list[str]) -> dict | None:
+    """Development-time comparison. Returns None when no truth.json is visible, which is exactly
+    the situation on the sealed reference instance: the fit runs blind and is compared at reveal."""
+    if not (regime_dir / "truth.json").exists():
+        return None
     truth = json.loads((regime_dir / "truth.json").read_text())
     roi_true = np.array([truth["channels"][c]["roi_realised"] for c in channels])
     roi_est = np.array([summary[c]["roi"] for c in channels])
@@ -165,10 +168,18 @@ def compare_to_truth(summary: dict, regime_dir: Path, channels: list[str]) -> di
     }
 
 
-def print_comparison(name: str, summary: dict, cmp: dict, channels: list[str], fit: dict):
+def print_comparison(name: str, summary: dict, cmp: dict | None, channels: list[str], fit: dict):
     print(f"\n{name}")
     for k, v in fit.items():
         print(f"  {k:28s} {v:.4f}" if isinstance(v, float) else f"  {k:28s} {v}")
+    if cmp is None:
+        print("  BLIND FIT: no truth visible, comparison deferred to the reveal")
+        print(f"  {'channel':16s} {'ROI est':>9s} {'mROI est':>9s} {'decay':>6s} {'k_rel':>6s} {'s':>5s}")
+        for c in channels:
+            s = summary[c]
+            print(f"  {c:16s} {s['roi']:>9.2f} {s['mroi_at_mean_spend']:>9.2f} "
+                  f"{s['decay']:>6.2f} {s['k_rel']:>6.2f} {s['s']:>5.2f}")
+        return
     print(f"  {'channel':16s} {'ROI true':>9s} {'ROI est':>9s} {'abs err':>8s} {'mROI est':>9s} {'decay':>6s} {'k_rel':>6s} {'s':>5s}")
     for c in channels:
         s = summary[c]

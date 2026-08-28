@@ -1,0 +1,14 @@
+Sealed reference instance, Galois & Co. MMM simulation study
+created 2026-08-28
+
+The files below were generated once, with randomised true parameters and a master seed
+drawn from the OS entropy pool, then sealed. All models are fitted on reference/observed.csv
+(and reference/lift_test.json for calibrated models) with no access to the sealed folder.
+The git history shows this commitment before any result on the reference instance.
+
+sha256(truth.json)  c22209f849b7a752ab384e4c87eb5850e11bbacb2c0dce6d9c6ca868fc375e74
+sha256(truth.csv)   ed775dcfb3cd64e0fa06116438ed55002a7ffddcc3a4c96f4e1e9a0fdb49981a
+sha256(observed.csv) e107aa8c8ad3901b070415a87b8179a8659d723a719da93adcb6fe89e05dee7e
+sha256(lift_test.json) a67f68516a0782fc92791d06da648be45cce9e3a26d569cd11b4222a1437b600
+
+Reveal: git add -f reference/sealed && commit; verify: python make_reference.py --verify
