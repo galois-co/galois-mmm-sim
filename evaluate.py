@@ -28,6 +28,7 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import minimize
 
+from features import compare_to_truth
 from transforms import hill
 
 MODEL_ORDER = ["ols", "ridge", "ridge_rssd0.1", "bayes", "bayes_calibrated", "bayes_prior0.5", "bayes_prior2"]
@@ -121,7 +122,17 @@ def evaluate_regime(regime_dir: Path, results_dir: Path, bound: float) -> tuple[
                            "true_optimal_allocation": dict(zip(channels, x_opt.round(0).tolist())),
                            "scenarios_true": scen_true, "models": {}}
     for name, res in results.items():
-        cmp = res["comparison_to_truth"]
+        cmp = res.get("comparison_to_truth")
+        if cmp is None:
+            # Blind fit evaluated after the reveal: recompute the comparison from the stored
+            # estimates, and the interval coverage where the model provides intervals.
+            cmp = compare_to_truth(res["channels"], regime_dir, channels)
+            if cmp is not None and all("roi_hdi5" in res["channels"][c] for c in channels):
+                inside = {c: res["channels"][c]["roi_hdi5"] <= cmp["roi_true"][c] <= res["channels"][c]["roi_hdi95"]
+                          for c in channels}
+                cmp["coverage_90"] = float(np.mean(list(inside.values())))
+        if cmp is None:
+            continue                                        # truth still sealed: nothing to evaluate yet
         rows.append({"regime": truth["regime"], "model": name, "label": MODEL_LABEL.get(name, name),
                      "roi_mae": cmp["roi_mean_abs_error"], "roi_rank_corr": cmp["roi_spearman"],
                      "share_mae": cmp["share_mean_abs_error"], "coverage_90": cmp.get("coverage_90"),
