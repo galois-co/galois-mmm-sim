@@ -1,0 +1,132 @@
+{
+  "regime": "R",
+  "bound": 0.3,
+  "status_quo_weekly_media_revenue": 193309.28729898506,
+  "true_optimal_weekly_media_revenue": 204374.2919046802,
+  "true_optimal_allocation": {
+    "search_nonbrand": 22167.0,
+    "search_brand": 4792.0,
+    "social": 30461.0,
+    "display": 10937.0,
+    "video": 8450.0,
+    "affiliate": 6614.0
+  },
+  "scenarios_true": {
+    "video_cut_50": -12986.316179940884,
+    "social_cpm_plus_20": -8079.9356371417525
+  },
+  "models": {
+    "bayes": {
+      "label": "M2 Bayes",
+      "recommended_allocation": {
+        "search_nonbrand": 16479.0,
+        "search_brand": 8899.0,
+        "social": 33539.0,
+        "display": 10937.0,
+        "video": 6953.0,
+        "affiliate": 6614.0
+      },
+      "allocation_change_pct": {
+        "search_nonbrand": -14.2,
+        "search_brand": 30.0,
+        "social": 30.0,
+        "display": -30.0,
+        "video": 7.0,
+        "affiliate": -30.0
+      },
+      "predicted_uplift_weekly": 10055.936027547024,
+      "realised_uplift_weekly": 3443.186718286568,
+      "regret_weekly": 7621.817887408572,
+      "regret_annual": 397687.40282026073,
+      "regret_share_of_available_gain": 0.6888219353732248,
+      "scenarios_model": {
+        "video_cut_50": -4108.584916274296,
+        "social_cpm_plus_20": -7663.812457192806
+      }
+    },
+    "bayes_calibrated": {
+      "label": "M3 Bayes + lift",
+      "recommended_allocation": {
+        "search_nonbrand": 16347.0,
+        "search_brand": 8899.0,
+        "social": 33539.0,
+        "display": 10937.0,
+        "video": 7085.0,
+        "affiliate": 6614.0
+      },
+      "allocation_change_pct": {
+        "search_nonbrand": -14.9,
+        "search_brand": 30.0,
+        "social": 30.0,
+        "display": -30.0,
+        "video": 9.0,
+        "affiliate": -30.0
+      },
+      "predicted_uplift_weekly": 10308.312258768914,
+      "realised_uplift_weekly": 3696.5333112639782,
+      "regret_weekly": 7368.471294431161,
+      "regret_annual": 384468.41096518195,
+      "regret_share_of_available_gain": 0.665925732253073,
+      "scenarios_model": {
+        "video_cut_50": -3956.8973964074394,
+        "social_cpm_plus_20": -7971.319187564484
+      }
+    },
+    "ols": {
+      "label": "M0 OLS",
+      "recommended_allocation": {
+        "search_nonbrand": 24964.0,
+        "search_brand": 8899.0,
+        "social": 27457.0,
+        "display": 10937.0,
+        "video": 4550.0,
+        "affiliate": 6614.0
+      },
+      "allocation_change_pct": {
+        "search_nonbrand": 30.0,
+        "search_brand": 30.0,
+        "social": 6.4,
+        "display": -30.0,
+        "video": -30.0,
+        "affiliate": -30.0
+      },
+      "predicted_uplift_weekly": 35793.1636591483,
+      "realised_uplift_weekly": -1749.4194322857074,
+      "regret_weekly": 12814.424037980847,
+      "regret_annual": 668624.6102417457,
+      "regret_share_of_available_gain": 1.1581038141986209,
+      "scenarios_model": {
+        "video_cut_50": -2015.8835921193677,
+        "social_cpm_plus_20": -3249.143964701012
+      }
+    },
+    "ridge": {
+      "label": "M1 ridge",
+      "recommended_allocation": {
+        "search_nonbrand": 24880.0,
+        "search_brand": 8899.0,
+        "social": 27541.0,
+        "display": 10937.0,
+        "video": 4550.0,
+        "affiliate": 6614.0
+      },
+      "allocation_change_pct": {
+        "search_nonbrand": 29.6,
+        "search_brand": 30.0,
+        "social": 6.7,
+        "display": -30.0,
+        "video": -30.0,
+        "affiliate": -30.0
+      },
+      "predicted_uplift_weekly": 18155.34384053081,
+      "realised_uplift_weekly": -1711.5820818481152,
+      "regret_weekly": 12776.586687543255,
+      "regret_annual": 666650.3518892882,
+      "regret_share_of_available_gain": 1.1546842629389569,
+      "scenarios_model": {
+        "video_cut_50": -1046.461308595055,
+        "social_cpm_plus_20": -6909.374128134281
+      }
+    }
+  }
+}
