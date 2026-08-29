@@ -1,0 +1,246 @@
+{
+  "master_seed": 1001912266303416786,
+  "simulation_seed": 2075997285,
+  "config": {
+    "start_date": "2023-01-02",
+    "n_weeks": 156,
+    "seed": 20260827,
+    "business": {
+      "description": "French DTC fashion brand, roughly EUR 20M annual revenue, EUR 4M annual paid media",
+      "baseline_annual_eur": 13600000,
+      "trend_annual": 0.02,
+      "seasonality_log_coefs": [
+        -0.03,
+        0.1,
+        0.02,
+        0.03,
+        0.0,
+        0.01
+      ],
+      "event_log_effects": {
+        "black_friday": 0.35,
+        "black_friday_next": 0.1,
+        "christmas": 0.2,
+        "post_christmas": -0.12,
+        "rentree": 0.08,
+        "august": -0.12
+      },
+      "discount": {
+        "base": 0.05,
+        "noise_sd": 0.015,
+        "soldes_early": 0.35,
+        "soldes_late": 0.2,
+        "black_friday": 0.3,
+        "black_friday_next": 0.15,
+        "elasticity": 1.2
+      },
+      "sentiment": {
+        "phi": 0.8,
+        "sd": 0.06588159491670365
+      },
+      "noise_sd_share": 0.05598975685090781
+    },
+    "media": {
+      "annual_budget_eur": 4000000,
+      "l_max": 13,
+      "channels": {
+        "search_nonbrand": {
+          "share": 0.23599118507858433,
+          "decay": 0.1616325803759744,
+          "k_rel": 0.7795427837469512,
+          "s": 1.614755936936583,
+          "roi_target": 2.506092175668741,
+          "pattern": "steady"
+        },
+        "search_brand": {
+          "share": 0.0847350229412961,
+          "decay": 0.17589000714670588,
+          "k_rel": 1.3078696079069159,
+          "s": 1.0005719640816941,
+          "roi_target": 1.3859328533153776,
+          "pattern": "steady"
+        },
+        "social": {
+          "share": 0.3082674412997802,
+          "decay": 0.4299163525377431,
+          "k_rel": 0.6578174621023727,
+          "s": 1.4859228079558977,
+          "roi_target": 3.441673836504939,
+          "pattern": "bursty"
+        },
+        "display": {
+          "share": 0.16517304825988766,
+          "decay": 0.3497983531382314,
+          "k_rel": 1.1268081201303353,
+          "s": 1.4167333149095591,
+          "roi_target": 1.3019403751328247,
+          "pattern": "steady"
+        },
+        "video": {
+          "share": 0.08368952383390792,
+          "decay": 0.6352349768458356,
+          "k_rel": 2.138901053680149,
+          "s": 1.4953128108771747,
+          "roi_target": 3.0031072045549667,
+          "pattern": "flights"
+        },
+        "affiliate": {
+          "share": 0.12214377858654381,
+          "decay": 0.20831306344869308,
+          "k_rel": 1.0235304056516306,
+          "s": 0.8379989370501174,
+          "roi_target": 0.5059956163791748,
+          "pattern": "steady"
+        }
+      },
+      "patterns": {
+        "bursty": {
+          "bursts_per_year": 6,
+          "burst_weeks": 2,
+          "burst_multiplier": 2.0
+        },
+        "flights_random": {
+          "flights_per_year": 3,
+          "flight_weeks": 5
+        },
+        "flights_calendar_weeks_of_year": [
+          2,
+          3,
+          4,
+          5,
+          36,
+          37,
+          38,
+          39,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51
+        ]
+      },
+      "budget_season": {
+        "fourier_amplification": 1.5,
+        "event_multipliers": {
+          "black_friday": 2.2,
+          "black_friday_next": 1.3,
+          "christmas": 1.5,
+          "post_christmas": 0.7,
+          "soldes_early": 1.4,
+          "rentree": 1.2,
+          "august": 0.6
+        }
+      }
+    },
+    "regimes": {
+      "A": {
+        "label": "independent spend",
+        "budget_follows_season": false,
+        "common_shock_sd": 0.0,
+        "channel_noise_sd": 0.3,
+        "video_flights": "random",
+        "endogenous_brand_search": false,
+        "performance_chasing": false,
+        "anticipatory_spend": false,
+        "quarterly_feedback": false,
+        "misspecification": false
+      },
+      "B": {
+        "label": "correlated spend through a common budget cycle",
+        "budget_follows_season": true,
+        "common_shock_sd": 0.15,
+        "channel_noise_sd": 0.1,
+        "video_flights": "calendar",
+        "endogenous_brand_search": false,
+        "performance_chasing": false,
+        "anticipatory_spend": false,
+        "quarterly_feedback": false,
+        "misspecification": false
+      },
+      "C": {
+        "label": "correlated and endogenous spend",
+        "budget_follows_season": true,
+        "common_shock_sd": 0.15,
+        "channel_noise_sd": 0.1,
+        "video_flights": "calendar",
+        "endogenous_brand_search": true,
+        "performance_chasing": true,
+        "anticipatory_spend": true,
+        "quarterly_feedback": true,
+        "misspecification": false
+      },
+      "D": {
+        "label": "C plus misspecification and measurement error",
+        "budget_follows_season": true,
+        "common_shock_sd": 0.15,
+        "channel_noise_sd": 0.1,
+        "video_flights": "calendar",
+        "endogenous_brand_search": true,
+        "performance_chasing": true,
+        "anticipatory_spend": true,
+        "quarterly_feedback": true,
+        "misspecification": true
+      }
+    },
+    "endogeneity": {
+      "brand_search_noise_sd": 0.06,
+      "brand_search_demand_exponent": 3.0,
+      "brand_search_media_exponent": 0.5,
+      "chasing_exponent": 0.6,
+      "chasing_clip": [
+        0.6,
+        1.6
+      ],
+      "anticipatory_multiplier": 1.4,
+      "anticipatory_channels": [
+        "search_nonbrand",
+        "social",
+        "display"
+      ],
+      "quarterly_feedback_exponent": 0.5,
+      "quarterly_feedback_clip": [
+        0.85,
+        1.2
+      ]
+    },
+    "lift_test": {
+      "channel": "social",
+      "start_week": 100,
+      "n_weeks": 8,
+      "measurement_noise_sd": 0.15
+    },
+    "misspecification": {
+      "video_delayed_weights": [
+        0.1,
+        0.25,
+        0.3,
+        0.18,
+        0.1,
+        0.05,
+        0.02
+      ],
+      "competitor_shock": {
+        "episodes": 3,
+        "length_weeks": 3,
+        "log_effect": -0.1
+      },
+      "spend_measurement_error_sd": 0.05,
+      "display_fee_markup": 0.15
+    }
+  },
+  "regime": {
+    "label": "sealed reference instance",
+    "budget_follows_season": true,
+    "common_shock_sd": 0.15,
+    "channel_noise_sd": 0.1,
+    "video_flights": "calendar",
+    "endogenous_brand_search": true,
+    "performance_chasing": true,
+    "anticipatory_spend": true,
+    "quarterly_feedback": true,
+    "misspecification": true
+  }
+}
