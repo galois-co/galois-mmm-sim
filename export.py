@@ -33,6 +33,17 @@ CHANNELS = ["search_nonbrand", "search_brand", "social", "display", "video", "af
 MODEL_LABEL = {"ols": "M0 OLS", "ridge": "M1 ridge", "bayes": "M2 Bayes", "bayes_calibrated": "M3 Bayes + lift"}
 
 
+def sanitize(obj):
+    """NaN and infinities become null: strict JSON only, whatever pandas produced."""
+    if isinstance(obj, dict):
+        return {k: sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize(v) for v in obj]
+    if isinstance(obj, float) and not np.isfinite(obj):
+        return None
+    return obj
+
+
 def load_json(path: Path):
     return json.loads(path.read_text()) if path.exists() else None
 
@@ -227,7 +238,7 @@ def main():
         if payload is None:
             print(f"  SKIPPED {name}: source files not found")
             continue
-        (out / name).write_text(json.dumps(payload, indent=1))
+        (out / name).write_text(json.dumps(sanitize(payload), indent=1, allow_nan=False))
         print(f"  wrote {out / name}  ({(out / name).stat().st_size / 1024:.0f} KB)")
     print(f"\nCopy into the site repository with:\n  cp -r {out} ~/code/galois-co/galois-co/public/data/snapshots/")
 
