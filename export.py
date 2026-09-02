@@ -208,7 +208,7 @@ def export_meta(reference_dir: Path, data_dir: Path) -> dict:
             "versions": versions,
             "dev_seed": dev_truth["seed"] if dev_truth else None,
             "commitment": commitment.read_text() if commitment.exists() else None,
-            "repository": "https://github.com/francoisgirard51/galois-mmm-sim"}
+            "repository": "https://github.com/galois-co/galois-mmm-sim"}
 
 
 # --------------------------------------------------------------------------- main
